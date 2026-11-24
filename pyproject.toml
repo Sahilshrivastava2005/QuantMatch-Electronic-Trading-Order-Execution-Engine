@@ -1,0 +1,109 @@
+[project]
+name = "order-matching"
+version = "0.12.0"
+description = "Order Book Matching Engine"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Stanislav Khrapov", email = "khrapovs@gmail.com" },
+  { name = "Akanksha Toshniwal", email = "akanksha.toshniwal@chintai.io" },
+  { name = "Shannen Tioniwar", email = "shannen.tioniwar@chintai.io" },
+]
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+  "faker>=33.0.0",
+  "loguru>=0.7.2",
+  "numpy>=2.2.6",
+]
+
+[project.urls]
+Upstream = "https://github.com/khrapovs/OrderBookMatchingEngine"
+
+[project.optional-dependencies]
+all = [
+  "order-matching[polars,web]",
+]
+polars = [
+  "pandera[polars]>=0.21.0",
+  "polars>=1.42.1",
+]
+web = [
+  "fastapi[standard]>=0.139.0",
+  "pandera[polars]>=0.21.0",
+  "polars>=1.42.1",
+  "pydantic>=2.13.4",
+  "uvicorn>=0.51.0",
+]
+
+[dependency-groups]
+dev = [
+  "prek>=0.2.30",
+  "ty>=0.0.12",
+]
+doc = [
+  "mkdocs-gen-files",
+  "mkdocs-literate-nav",
+  "mkdocs-macros-plugin",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "pymdown-extensions",
+]
+test = [
+  "httpx2>=2.7.0",
+  "pytest>=8.3.3",
+  "pytest-benchmark[histogram]>=5.1.0",
+  "pytest-cov>=6.0.0",
+  "pytest-xdist>=3.6.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
+
+[tool.commitizen]
+version_scheme = "semver"
+version_provider = "uv"
+update_changelog_on_bump = true
+
+[tool.fastapi]
+entrypoint = "order_matching.api.app:app"
+
+[tool.pytest.ini_options]
+addopts = "--cov-config=.coveragerc --doctest-modules --doctest-glob='*.md' -n=auto --benchmark-disable"
+testpaths = ["tests", "src", "README.md"]
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "D", "B", "I", "ARG", "ANN"]
+ignore = [
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D106",
+  "D107",
+  "D213",
+  "D417",
+]
+preview = true
+extend-select = ["PLR0917"]
+
+[tool.ruff.lint.pylint]
+max-positional-args = 1
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ty.rules]
+no-matching-overload = "ignore"

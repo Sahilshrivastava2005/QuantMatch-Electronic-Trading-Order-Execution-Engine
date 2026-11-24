@@ -1,0 +1,52 @@
+from dataclasses import dataclass, field
+from datetime import datetime
+from math import isfinite
+
+from order_matching.enums import Execution, Side, Status
+
+
+@dataclass(kw_only=True)
+class Order:
+    """Single order base storage class."""
+
+    side: Side
+    price: float
+    size: float
+    timestamp: datetime
+    order_id: str
+    trader_id: str
+    execution: Execution
+    expiration: datetime = datetime.max
+    status: Status = Status.OPEN
+    price_number_of_digits: int = 1
+
+    def __post_init__(self) -> None:
+        self._validate_size()
+        if not isfinite(self.price) or self.price <= 0:
+            raise ValueError("price must be finite and greater than zero")
+        self.price = round(number=self.price, ndigits=self.price_number_of_digits)
+        if self.price <= 0:
+            raise ValueError("price must be finite and greater than zero")
+
+    def _validate_size(self) -> None:
+        if not isfinite(self.size) or self.size <= 0:
+            raise ValueError("size must be finite and greater than zero")
+
+
+@dataclass(kw_only=True)
+class LimitOrder(Order):
+    """Single limit order storage class."""
+
+    execution: Execution = field(init=False, default=Execution.LIMIT)
+
+
+@dataclass(kw_only=True)
+class MarketOrder(Order):
+    """Single market order storage class."""
+
+    execution: Execution = field(init=False, default=Execution.MARKET)
+    price: float = field(init=False)
+
+    def __post_init__(self) -> None:
+        self._validate_size()
+        self.price = 0 if self.side == Side.SELL else float("inf")

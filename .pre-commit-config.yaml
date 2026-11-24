@@ -1,0 +1,52 @@
+repos:
+  - repo: builtin
+    hooks:
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: end-of-file-fixer
+      - id: forbid-new-submodules
+      - id: mixed-line-ending
+      - id: check-json
+      - id: pretty-format-json
+        args: ["--autofix"]
+      - id: check-yaml
+      - id: detect-private-key
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff-check
+        args: [ --config, pyproject.toml, --fix, --exit-non-zero-on-fix ]
+        types_or: [ python ]
+      - id: ruff-format
+        args: [ --config, pyproject.toml ]
+        types_or: [ python ]
+
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: v0.0.80
+    hooks:
+      - id: ty
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v10.10.0
+    hooks:
+      - id: eslint
+        description: 'Lint javascript files.'
+        files: \.js$
+        args: [--max-warnings=0, --fix]
+        additional_dependencies:
+          [
+            'eslint@9.30.1',
+            '@eslint/js@9.30.1',
+            'eslint-plugin-import@2.32.0',
+            'globals@16.3.0',
+          ]
+
+  - repo: local
+    hooks:
+      - id: library-skills-check
+        name: library-skills check
+        entry: uvx library-skills --check
+        language: system
+        pass_filenames: false
+        files: ^(pyproject\.toml|uv\.lock|package\.json|package-lock\.json)$
